@@ -239,3 +239,53 @@ SELECT * FROM EMP
 WHERE JOB !='CLERK' AND JOB !='SALESMAN';
 
 %% ------------------
+
+이하 SQL 타이핑 내용
+
+
+
+
+
+create table member(
+seq number(11) not null primary key,
+name varchar2(30),
+age number(3),
+gen char(2)
+);
+
+insert into member values(11,'A',25,'F');
+insert into member values(22,'B',26,'M');
+insert into member values(33,'C',27,'F');
+insert into member values(44,'D',27,'F');
+
+
+select * from member;
+drop table member;
+delete from member;
+rollback;
+commit;
+
+select rowid, rownum, name, age from member;
+alter table member add(seq number(11,0) not null);
+
+
+insert into member(seq, name, gen) values(44,'D','M');
+insert into member(name, gen) values('E','F');
+insert into member values(44,'D','','M');
+insert into member values(44,'D',null,' ');
+
+
+ALTER TABLE MEMBER
+ADD CONSTRAINT MEMBER_PK PRIMARY KEY 
+(
+  SEQ 
+)
+ENABLE;
+
+
+create SEQUENCE member_seq start with 1 increment by 1;
+insert into member values(member_seq.nextval,'A',11,'F');
+insert into member values(member_seq.nextval,'B',15,'M');
+insert into member values(member_seq.nextval,'B',17,'F');
+
+select name,age from member where age=25 or age=26
