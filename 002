@@ -145,6 +145,7 @@ SELECT to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') as to_Date FROM dual;
   마찬가지로 숫자형태로 바꾸려면 to_number 로 나타내면 된다.
   yyyy-mm-dd hh24:mi:ss 는 대한민국 모든 기업에서 사용하는 국민포맷시간이다.
   sysdate는 now와 같은 의미이다. 현재 시간을 출력한다.
+  as 는 sysdate를 내가 설정한 내용으로 도출시킨다.
 
 %% --------------------
 
