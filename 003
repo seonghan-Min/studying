@@ -105,6 +105,13 @@ AND SAL>
 SELECT ENAME, JOB, SAL FROM EMP
 WHERE (JOB,SAL) = (SELECT JOB,SAL FROM EMP WHERE EMPNO=7876);
 
+--문제:사원번호가 7499인 사원의 직업, 부서번호와 일치하는 사원의 정보를 출력
+SELECT * FROM EMP
+WHERE (JOB,DEPTNO) =
+    (SELECT JOB,DEPTNO FROM EMP
+    WHERE EMPNO=7499)
+;
+
 
 
 
@@ -143,7 +150,7 @@ WHERE EMP.DEPTNO=DEPT.DEPTNO;
 --JOIN의 종류는 크게 SELFJOIN 과 OUTHERJOIN이 있다.
 --OUTHERTJOIN에는 LEFTJOIN, RIGHTJOIN, FULLJOIN 으로 나뉜다.
 --위의 세 개 조인에는 각각 EQUAIJOIN, NONEQUIJOIN 으로 나뉜다.
---EQUAJOIN은 데이터의 여부가 값이 같은것을 출력하는 JOIN을 말한다.
+--EQUAIJOIN은 데이터의 여부가 값이 같은것을 출력하는 JOIN을 말한다.
 --NONEQUJOIN은 데이터의 여부가 값이 IN, ANY, ALL 을 출력하는 JOIN을 말한다.
 
 --TABLE EMP의 DEPTNO 데이터는 10, 20, 30 뿐이다.
@@ -176,6 +183,20 @@ SELECT E.ENAME, E.DEPTNO AS DDD, D.DEPTNO FROM EMP E, DEPT D
 WHERE E.DEPTNO(+) = D.DEPTNO
 AND E.DEPTNO=40;
 
+--문제: 사원번호, 사원명, 매니저번호, 매니저명 출력
+--EMP TABLE의 MGR 과 EMP TABLE의 EMPNO를 연결시키는 SELFJOIN 명령이다.
+--이 때 사원명 KING의 MGR은 없으므로 OUTERTJOIN을 입력해주지 않으면 KING은 결과에 출력되지 않는다.
+--두 번째 명령문은 ANSI-ORACLE 명령문이다.
+SELECT E1.EMPNO, E1.ENAME
+        , NVL(TO_CHAR(E1.MGR),'PRESIDENT') AS MGR
+        , NVL(TO_CHAR(E2.ENAME),'PRESIDENT') AS MGR_NAME 
+        FROM EMP E1, EMP E2
+WHERE E1.MGR=E2.EMPNO(+);
+
+SELECT E1.EMPNO, E1.ENAME, E1.MGR, E2.ENAME AS MGR_NAME 
+FROM EMP E1 LEFT OUTER JOIN EMP E2
+ON E1.MGR=E2.EMPNO;
+
 --해당하는 값을 중복을 제외하고 출력하는 방법이다.
 --SELECT DEPTNO FROM EMP 명령을 수행하면
 --EMP에 존재하는 모든 DEPTNO 값을 EMP ROW 수 만큼 출력해낸다.
@@ -185,9 +206,3 @@ SELECT DISTINCT DEPTNO FROM DEPT;
 
 
 
---문제:사원번호가 7499인 사원의 직업, 부서번호와 일치하는 사원의 정보를 출력
-SELECT * FROM EMP
-WHERE (JOB,DEPTNO) =
-    (SELECT JOB,DEPTNO FROM EMP
-    WHERE EMPNO=7499)
-;
