@@ -1,0 +1,416 @@
+-----★TODAY CLASS★-----
+--GROUP FUNCTION
+--MAX , MIN, AVE, SUM, COUNT
+--COUNT(1) 은 PK의 ROW 개수를 전부 세어 결과를 출력한다. PK는 고유의 수 이므로 전체 ROW 수와 같다.
+--COUNT(*) 은 ROW 개수를 전부 세어 출력한다. 다만 모든 데이터를 읽고 출력해내므로 시간이 오래걸린다.
+--COUNT(COULUM) 은 COULUM의 ROW 개수를 전부 세어 출력한다.
+--이 때 COUNT는 NULL 값을 세어내지 않고 데이터 값이 존재하는 ROW의 개수만 결과로 출력한다.
+SELECT MAX(SAL), MIN(SAL), AVG(SAL), SUM(SAL)
+    , COUNT(1), COUNT(*) ,COUNT(SAL)
+    , COUNT(COMM), SUM(COMM), AVG(COMM)
+FROM EMP;
+
+
+
+--GROUP BY 함수는 데이터를 하나의 묶음으로 표시하고 싶을 때 사용한다.
+--사용하고자 하는 GROUP FUNCTION과 함께, 해당 COLUM을 GROUP으로 묶어주면 된다.
+--모든 GROUP FUNTION이 반드시 GROUP이 쓰여야만 하는 것은 아니다.
+SELECT DEPTNO, COUNT(DEPTNO) AS CNT
+FROM EMP
+GROUP BY DEPTNO;
+
+
+
+--HAVING 은 GROUP에 대한 조건을 거는 명령문이다.
+--GROUP 함수의 명령 실행 순서는 SELECT ~ WHERE~ 문장에 대한 답을 출력한 뒤 GROUP으로 묶어서 결과를 다시 출력하는 방식이다.
+--때문에 GROUP에 대한 조건은 WHERE에서 실행될 수 없다. 때문에 조건을 따로 걸어줘야만 한다.
+--이 때 사용하는 명령이 HAVING 이다.
+--아래의 명령문은 GROUP의 결과로 출력되는 데이터 중 DEPTNO=30 인 ROW를 제외한 나머지를 출력하는 것이다.
+SELECT DEPTNO, COUNT(DEPTNO) AS CNT
+FROM EMP
+GROUP BY DEPTNO
+HAVING DEPTNO NOT IN 30;
+
+
+
+-----★연습문제★-----
+--문제 1
+--EMP 테이블에서 부서인원이 4명보다 많은 부서의 부서번호, 인원수, 급여의 합 출력
+--왜 GROUP 명령을 밖으로 걸면 WHERE이 안써지나????????
+SELECT *
+FROM (SELECT DEPTNO, COUNT(EMPNO) AS 인원수, SUM(SAL) AS 합급여
+        FROM EMP
+        GROUP BY DEPTNO)
+WHERE 인원수 >4;
+
+
+
+
+
+--문제 2
+--NASTED GROUP FUNTION 으로 GROUP 안에 GROUP 을 넣어 명령하는 것을 말한다.
+--원래는 실행되어야 하는데, 어느 버젼 이후로 실행이 안되는 것 같다.
+--따라서 SUBQUERY문을 별도로 삽입하여 실행하여야 한다.
+SELECT DEPTNO, COUNT(EMPNO)
+FROM EMP
+GROUP BY DEPTNO
+HAVING COUNT(EMPNO)=(SELECT MAX(COUNT(EMPNO))
+                        FROM EMP
+                        GROUP BY DEPTNO);
+
+
+
+
+
+--문제 3         
+--EMP 테이블에서 가장 많은 사원을 갖는 MGR의 사원번호 출력
+SELECT MGR, COUNT(MGR)
+FROM EMP
+GROUP BY MGR
+HAVING COUNT(EMPNO) = (SELECT MAX(COUNT(MGR))
+                        FROM EMP
+                        GROUP BY MGR);
+
+
+
+
+
+--문제 4
+--EMP 테이블에서 부서번호가 10인 사원수와 부서번호가 30인 사원수 각각 출력
+--결과값을 2X1 행렬로 간단하게 표시되게끔 하기 위해 SUBQUERY를 사용한 것이다.
+--CNT10 으로 불리는 첫 번째 칸에 3이, CNT20 으로 불리는 두 번째 칸에는 5가 나와야 한다.
+--여기서 3이 나오는 칸에 SUBQUERY를, 5가 나오는 칸에 SUBQUERY를 넣은 것이다.
+--이 때 전체 명령문의 FROM에 EMP를 넣으면 같은 값이 14줄 출력된다.
+--하지만 우리는 같은 값 한 줄만 원하기 때문에 ROWNUM=1의 조건을 달아준 것이다.
+--이를 대신하는 테이블 명령으로 FROM DUAL 을 사용하면 한 줄의 결과만 출력된다.
+--DUAL은 1줄의 더미데이터로 구성된 오라클의 기본 테이블이다.
+SELECT (SELECT COUNT(DEPTNO) FROM EMP WHERE DEPTNO=10) AS CNT10
+        , (SELECT COUNT(DEPTNO) FROM EMP WHERE DEPTNO=20) AS CNT20
+FROM EMP
+WHERE ROWNUM=1;
+
+--위의 문제가 만약 가로세로가 바뀌어서 나온다면 이런 식으로 표시된다.
+--이를 가로세로를 바꾸어서 표시하면 아래와 같이 DECODE를 사용하여 SUM을 쓰면 된다.
+SELECT DEPTNO, COUNT(DEPTNO) AS CNT
+FROM EMP
+WHERE DEPTNO IN (10, 20)
+GROUP BY DEPTNO;
+
+SELECT
+    SUM(DECODE(DEPTNO, 10, 1, 0)) AS CNT10,
+    SUM(DECODE(DEPTNO, 20, 1, 0)) AS CNT20
+FROM EMP;
+
+
+
+
+
+--문제 5
+--EMP 테이블에서 사원번호가 7521인 사원의 직업과 같고
+--7934 사원의 급여보다 많은 급여를 받는 사원의 사원번호, 이름, 직업, 급여 출력
+SELECT EMPNO, ENAME, JOB, SAL
+FROM EMP
+WHERE JOB IN (SELECT JOB FROM EMP
+                WHERE EMPNO=7521)
+AND SAL > ANY(SELECT SAL FROM EMP
+                WHERE EMPNO=7934);
+                
+                
+
+
+
+--문제 6
+--직업별로 최소 급여를 받는 사원의 사원번호, 이름, 업무, 부서명를 직업별로 내림차순 정렬하여 출력
+SELECT E.EMPNO, E.ENAME, E.JOB, D.DNAME, MIN(E.SAL)
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND E.SAL IN (SELECT MIN(SAL) FROM EMP GROUP BY JOB)
+GROUP BY E.EMPNO, E.ENAME, E.JOB, D.DNAME
+ORDER BY E.JOB;
+
+
+
+
+
+--문제 8
+--COMM이 0 또는 NULL이고 부서위치가 GO로 끝나는 사원 정보 출력
+SELECT E.EMPNO, E.ENAME, NVL(E.COMM,0) AS COMM, E.DEPTNO, D.DNAME, D.LOC
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND NVL(COMM,0)=0
+AND D.LOC LIKE '%GO';
+
+
+
+
+
+--문제 9
+--각 부서 별 평균 급여가 2000이상이면 초과, 아니면 미만 출력
+SELECT 
+    DEPTNO, 
+    CASE
+        WHEN AVG(SAL)>2000 THEN '초과'
+        WHEN AVG(SAL)<2000 THEN '미만'
+    END AS 평균급여
+FROM EMP
+GROUP BY DEPTNO;
+
+
+
+
+
+--문제 10
+--각 부서 별 입사일이 가장 오래된 사원을 한 명씩 선별하여 사원번호, 사원명, 부서번호, 입사일 출력
+SELECT EMPNO, ENAME, DEPTNO, HIREDATE
+FROM EMP
+WHERE HIREDATE IN (SELECT MIN(HIREDATE) FROM EMP GROUP BY DEPTNO)
+GROUP BY EMPNO, ENAME, DEPTNO, HIREDATE
+ORDER BY DEPTNO;
+
+
+
+
+--문제 11 ★★★★★
+--1980년에 입사한 각 부서별 사원수를 부서번호, 부서명, 입사1980, 입사1981, 입사1982 출력
+SELECT
+    D.DEPTNO, D.DNAME,
+    SUM(DECODE (TO_CHAR(HIREDATE,'YYYY'), 1980, 1, 0)) AS 입사1980,
+    SUM(DECODE (TO_CHAR(HIREDATE,'YYYY'), 1981, 1, 0)) AS 입사1980,
+    SUM(DECODE (TO_CHAR(HIREDATE,'YYYY'), 1982, 1, 0)) AS 입사1980
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+GROUP BY D.DEPTNO, D.DNAME
+ORDER BY DEPTNO;
+
+
+
+
+
+--문제 12
+--81.05.31 이후 입사자 중 COMM이 NUL 이거나 0인 사원의 COMM을 500, 아니면 그대로 출력
+SELECT ENAME, DECODE(NVL(COMM,0),0,500,COMM) AS COMM
+FROM EMP
+WHERE HIREDATE>TO_DATE('1981-05-31','YYYY-MM-DD');
+
+
+
+
+
+--문제 13
+--1981년 6월 1일 ~ 1981년 12월 31일 입사자 중 부서명이 SALES인 사원의 부서번호, 사원명, 직업, 입사일 출력
+SELECT E.DEPTNO, E.ENAME, E.JOB, E.HIREDATE
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND HIREDATE BETWEEN TO_DATE('1981-06-01') AND TO_DATE('1981-12-31')
+AND D.DNAME='SALES';
+
+
+
+
+
+--문제 18
+--사원명 첫 글자 A, 처음과 끝 사이에 LL 들어가는 사원의 커미션이 COMM2 일 때
+--모든 사원의 커미션에 COMM2 를 더한 결과를 사원명, COMM, COMM2, SUM 으로 출력
+SELECT COMM FROM EMP
+WHERE ENAME LIKE 'A%' AND ENAME LIKE '%LL%';
+
+SELECT 
+    ENAME, 
+    NVL(COMM,0) AS COMM, 
+    (SELECT COMM FROM EMP WHERE ENAME LIKE 'A%' AND ENAME LIKE '%LL%') AS COMM2,
+    (NVL(COMM,0) + (SELECT COMM FROM EMP WHERE ENAME LIKE 'A%' AND ENAME LIKE '%LL%')) AS SUM
+FROM EMP;
+
+
+
+
+
+--문제 19
+--각 부서의 직업별로 속한 사원 수 출력
+SELECT *
+FROM (SELECT DEPTNO
+            , JOB
+            , COUNT(EMPNO) AS 사원수
+        FROM EMP
+        WHERE HIREDATE > TO_DATE('1981-03','YYYY-MM')
+        GROUP BY DEPTNO, JOB
+      )
+WHERE 사원수 > 1
+ORDER BY DEPTNO;
+
+
+
+
+
+-----★SQL 심화★-----
+--문제 1
+SELECT DEPTNO, COUNT(EMPNO), SUM(SAL)
+FROM EMP
+GROUP BY DEPTNO
+HAVING COUNT(EMPNO) > 4;
+
+
+--문제 2
+SELECT DEPTNO, COUNT(EMPNO)
+FROM EMP
+GROUP BY DEPTNO
+HAVING COUNT(EMPNO) IN (SELECT MAX(COUNT(EMPNO))
+                        FROM EMP
+                        GROUP BY DEPTNO);
+
+
+--문제 3
+SELECT MGR, COUNT(MGR) AS 사원수
+FROM EMP
+GROUP BY MGR
+HAVING COUNT(MGR) IN (SELECT MAX(COUNT(MGR)) FROM EMP GROUP BY );
+
+
+--문제 4
+SELECT 
+    SUM(DECODE(DEPTNO,10,1,0)) AS CNT10,
+    SUM(DECODE(DEPTNO,20,1,0)) AS CNT20
+FROM EMP;
+
+
+--문제 5
+SELECT EMPNO, ENAME, JOB, SAL
+FROM EMP
+WHERE JOB = (SELECT JOB FROM EMP WHERE EMPNO=7521)
+AND SAL > (SELECT SAL FROM EMP WHERE EMPNO=7934);
+
+
+--문제 6
+SELECT E.EMPNO, E.ENAME, E.JOB, D.DNAME
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND SAL IN (SELECT MIN(SAL) FROM EMP GROUP BY JOB)
+GROUP BY E.EMPNO, E.ENAME, E.JOB, D.DNAME
+ORDER BY JOB DESC;
+
+
+--문제 7
+SELECT 
+    DEPTNO, 
+    ENAME,
+    ROUND((SAL/160),1) AS 시급
+FROM EMP
+ORDER BY DEPTNO, 시급 DESC;
+
+
+--문제 8
+SELECT 
+    E.EMPNO, 
+    E.ENAME, 
+    NVL(E.COMM,0) AS COMM,
+    E.DEPTNO, 
+    D.DNAME, 
+    D.LOC
+FROM EMP E, DEPT D
+WHERE E.DEPTNO=D.DEPTNO
+AND D.LOC LIKE '%GO'
+AND NVL(E.COMM,0)=0;
+
+
+--문제 9
+SELECT
+    DEPTNO,
+    CASE
+        WHEN AVG(SAL)>2000 THEN '초과'
+        ELSE '미만'
+    END AS 평균급여
+FROM EMP
+GROUP BY DEPTNO;
+
+
+--문제 10
+SELECT 
+    EMPNO, 
+    ENAME,
+    DEPTNO, 
+    MIN(HIREDATE) AS HIREDATE
+FROM EMP
+WHERE HIREDATE IN (SELECT MIN(HIREDATE) FROM EMP GROUP BY DEPTNO)
+GROUP BY EMPNO, ENAME, DEPTNO;
+
+
+--문제 11
+SELECT 
+    D.DEPTNO, 
+    D.DNAME,
+    SUM(DECODE(TO_CHAR(HIREDATE,'YYYY'),'1980',1,0)) AS 입사1980,
+    SUM(DECODE(TO_CHAR(HIREDATE,'YYYY'),'1981',1,0)) AS 입사1981,
+    SUM(DECODE(TO_CHAR(HIREDATE,'YYYY'),'1982',1,0)) AS 입사1982
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+GROUP BY D.DEPTNO, D.DNAME
+ORDER BY DEPTNO;
+
+
+--문제 12
+SELECT 
+    ENAME, 
+    DECODE(NVL(COMM,0),0,500,COMM) AS COMM
+FROM EMP
+WHERE HIREDATE > TO_DATE('1981-05-31')
+ORDER BY COMM DESC;
+
+
+--문제 13
+SELECT D.DEPTNO, D.DNAME, E.ENAME, E.JOB, E.HIREDATE
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND E.HIREDATE BETWEEN '1981-06-01' AND '1981-12-31'
+AND D.DNAME LIKE 'SALES'
+ORDER BY HIREDATE;
+
+
+--문제 14
+SELECT SYSDATE, SYSDATE +1/24
+FROM DUAL;
+
+
+--문제 15
+SELECT 
+    D.DEPTNO, 
+    D.DNAME,
+    DECODE(TO_CHAR(COUNT(E.EMPNO)),0,'없음',COUNT(E.EMPNO)) AS 사원수
+FROM EMP E, DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO
+GROUP BY D.DEPTNO, D.DNAME
+ORDER BY D.DEPTNO;
+
+
+--문제 16
+SELECT 
+    E1.EMPNO, 
+    E1.ENAME, 
+    E1.MGR, 
+    E2.ENAME MGR_NAME
+FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO(+)
+AND E1.SAL > E2.SAL;
+
+
+--문제 19
+SELECT 
+    D.DEPTNO, 
+    D.DNAME,
+    E.EMPNO,
+    E.ENAME,
+    E.HIREDATE
+FROM EMP E, DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO
+AND HIREDATE(+) > TO_DATE('1981-05-31')
+ORDER BY DEPTNO, HIREDATE;
+
+
+--문제 20
+SELECT * 
+FROM ( SELECT
+            EMPNO, 
+            ENAME,
+            HIREDATE,
+            TRUNC(MONTHS_BETWEEN(SYSDATE,HIREDATE)/12,0) AS 근무년수
+        FROM EMP)
+WHERE 근무년수>30;
