@@ -82,7 +82,7 @@ WHERE (SAL,COMM)
             
 --문제 12
 --EMP와 DEPT 테이블을 JOIN하여 부서번호, 부서명, 이름, 급여 출력
-SELECT E.DEPTNO, D.DNAME, E.ENAME, E.SAL
+SELECT D.DEPTNO, D.DNAME, E.ENAME, E.SAL
 FROM EMP E, DEPT D
 WHERE D.DEPTNO=E.DEPTNO;
 
@@ -93,12 +93,18 @@ FROM EMP E, DEPT D
 WHERE D.DEPTNO=E.DEPTNO
 AND E.ENAME='ALLEN';
 
+SELECT D.DNAME
+FROM EMP E RIGHT OUTER JOIN DEPT D
+ON E.DEPTNO=D.DEPTNO
+WHERE E.ENAME='ALLEN';
+
 --문제 14
 --DEPT TABLE에 있는 모든 부서를 출력
 --위의 결과에 EMP TABLE를 JOIN하여 모든 사원의 이름, 부서번호, 부서명, 급여 출력
-SELECT D.DNAME, E.ENAME, E.DEPTNO, E.SAL
+SELECT D.DEPTNO, D.DNAME, D.LOC, E.ENAME, E.SAL
 FROM EMP E, DEPT D
-WHERE E.DEPTNO=D.DEPTNO;
+WHERE E.DEPTNO=D.DEPTNO
+ORDER BY D.DEPTNO;
 
 --문제 15
 --EMP TABLE의 모든 사원번호, 사원명, 매니저번호, 매니저명 출력
@@ -154,7 +160,7 @@ WHERE E.DEPTNO=D.DEPTNO
 AND JOB IN
     (SELECT JOB FROM EMP
         WHERE DEPTNO=10)
-ORDER BY SAL DESC;
+ORDER BY E.SAL DESC;
 
 --문제 22
 --MARTIN 이나 SCOTT의 급여와 같은 사원의 사원번호, 이름, 급여 출력
@@ -179,12 +185,24 @@ AND SAL >=
         
 --문제 24
 --각 사원 별 시급을 계산하여 부서번호, 사원명, 시급 출력
---조건1 : 한 달 근무일수 20일. 하루 근무시간 8시간.
+--조건1 : 근무시간은 180시간. 소수 두 번째 자리 반올림
 --조건2 : 시급은 소수 두 번째 자리에서 반올림.
 --조건3 : 부서별로 오름차순.
 --조건4 : 시급이 많은 순 출력.
-SELECT DEPTNO, ENAME, ROUND(SAL/160,1) AS HOURLY_WAGE FROM EMP
-ORDER BY DEPTNO ASC, SAL DESC;
+
+--해당 문제에서 ROUND를 두 번 써서 문제를 풀었다.
+--하지만 수식이 복잡해지고 내용이 많아지면 시간이 오래 걸릴 수 있다.
+--이럴 땐 우리가 보고자 하는 SELECT 문의 결과를 하나의 테이블로 보고
+--FROM 명령에 EMP 테이블이 아닌 SELECT 결과 테이블을 집어넣으면 된다.
+--이를 INLINE VIEW 라고 한다.
+SELECT DEPTNO, ENAME, ROUND(SAL/160,1) AS 시급 FROM EMP
+WHERE ROUND(SAL/160,1)>10
+ORDER BY DEPTNO ASC, 시급 DESC;
+
+SELECT *
+FROM (SELECT DEPTNO, ENAME, ROUND(SAL/160,1) AS 시급 FROM EMP) W
+WHERE W.시급 >10
+ORDER BY DEPTNO, 시급 DESC;
 
 --문제 25
 --각 사원 별 커미션이 0 또는 NULL이고
@@ -204,7 +222,7 @@ AND D.LOC LIKE '%GO';
 SELECT E.DEPTNO, E.ENAME, E.JOB, E.HIREDATE, D.DNAME
 FROM EMP E, DEPT D
 WHERE E.DEPTNO=D.DEPTNO 
-AND TO_CHAR(HIREDATE) BETWEEN '1981-06-01' AND '1981-12-31'
+AND TO_CHAR(HIREDATE) BETWEEN TO_DATE('1981-06-01','YYYY-MM-DD') AND TO_DATE('1981-12-31','YYYY-MM-DD')
 AND D.DNAME='SALES'
 ORDER BY HIREDATE ASC;
 
@@ -219,9 +237,14 @@ SELECT SYSDATE, SYSDATE+1/24 FROM DUAL;
 --각 부서별 사원수를 출력하시오
 --조건: 부서별 사원수가 없더라도 부서번호, 부서명 출력
 --조건: 부서별 사원수가 0인경우 '없음; 출력
---조건: 부서번호 오름차순 정렬
-SELECT COUNT() FROM EMP
-???????????;
+--조건: 부서번호 오름차순 정렬\
+SELECT D.DEPTNO
+    , D.DNAME
+    , DECODE(COUNT(E.ENAME),0,'없음',COUNT(E.ENAME)) AS 사원수
+FROM EMP E, DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO
+GROUP BY D.DEPTNO, D.DNAME
+ORDER BY DEPTNO;
 
 --문제 29
 --각 사원의 사원번호, 사원명, 매니저번호, 매니저명 출력
@@ -236,18 +259,26 @@ AND E1.SAL >= E2.SAL;
 --조건: 부서별 사원정보가 없더라도 부서번호, 부서명 출력
 --조건: 부서번호, 입사일 오름차순 정렬
 SELECT D.DEPTNO, D.DNAME, E.EMPNO
-    , E.ENAME, TO_CHAR(E.HIREDATE)
+    , E.ENAME, E.HIREDATE
 FROM EMP E, DEPT D
 WHERE E.DEPTNO(+) = D.DEPTNO
-AND TO_CHAR(HIREDATE)>'1981-05-31'
-ORDER BY D.DEPTNO, HIREDATE ;
+AND HIREDATE(+) > TO_DATE('1981-05-31')
+ORDER BY D.DEPTNO, E.HIREDATE ;
 
 
 --문제 31
 --입사일로부터 지금까지 근무년수가 30년 이상인 사원
 --사원번호, 사원명, 입사일, 근무년수 출력
 --조건: 근무년수는 월을 기준으로 버림
-SELECT EMPNO, ENAME, HIREDATE, MONTH_BETWEEN(SYSDATE, HIREDATE) AS 근속년수
-FROM EMP;
+--TRUNC(A,B) = A를 소숫점 B 자리까지 표시하는 명령. B 뒷자리는 반올림 없이 버린다.
+--ROUND(A,B) = A를 소숫점으로 B자리까지 표시하는 명령. B 뒷자리는 반올림한다.
+SELECT *
+FROM (SELECT EMPNO
+            , ENAME
+            , TO_CHAR(HIREDATE,'YYYY-MM-DD') AS HIREDATE
+            , TRUNC(MONTHS_BETWEEN(SYSDATE, HIREDATE)/12,0) AS 근속년수 FROM EMP)
+WHERE 근속년수 >=30;
 
-SELECT TRUNC(HIREDATE FROM EMP;
+-----★면접★-----
+--CRUD를 구사하여 응용할 수 있고, SUBQUERY나 JOIN 을 사용할 수 있다.
+--이를 ANSI-SQL로 변환할 줄 안다.
