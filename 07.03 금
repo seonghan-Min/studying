@@ -287,6 +287,9 @@ GROUP BY
 ORDER BY USER_ID;
     
 
+
+
+
 --문제 2
 --업체별 공급 상품 리스트(업체번호, 업체명, 상품번호, 상품명)
 --상품이 없더라도 업체명 출력. 업체번호 및 상품번호 오름차순.
@@ -305,25 +308,55 @@ WHERE
 ORDER BY 업체번호, 상품번호;
 
 
+
+
+
 --문제 3
 --회원권리 : 정규직 / 비정규직 구분하여 정규직이면 A, 비정규직이면 B
 --회원번호, 회원명, 정규/비정규 여부, 월급여 출력
+--%%UNION, INTERSECT, MINUS 사용하여 풀어보기
+--%%UNION은 SUBQEURY를 사용했을 때 가로로 붙는 현상을 세로로 다시 만들어주는 명령문.
+--%%INTERSECT는 두 행의 집합 중 공통된 행을 반영하는 교집합 명령.
+--%%MINUS는 교집합을 제외한 나머지를 반영하는 차집합 명령.
 SELECT
     U.USER_SEQ AS 회원번호,
     U.USER_NAME AS 회원명,
     DECODE(NVL(F.ASAL,0),0,'B','A') AS 정규직_여부,
     CASE
-        WHEN NVL(F.ASAL,0) = 0 THEN '시급'
+        WHEN NVL(F.ASAL,0) = 0 THEN TO_CHAR(P.TSAL*8*20)
         ELSE TO_CHAR(ASAL)
-    END AS 월급여
+    END AS 월급DU
 FROM 
     FULLTIME F, 
     PARTTIME P, 
     USERS U
 WHERE F.USER_SEQ(+) = U.USER_SEQ
 AND U.USER_SEQ = P.USER_SEQ(+)
-ORDER BY 회원명
+ORDER BY 회원번호
 ;
+
+
+select *
+from
+    (select
+        u.user_seq as 회원번호,
+        u.user_name as 회원명,
+        'A' as 정규비정규여부,
+        asal as 월급여
+    from users u, fulltime f
+    where u.user_seq = f.user_seq ) 
+union
+    (select
+        u.user_seq as 회원번호,
+        u.user_name as 회원명,
+        'B' as 정규비정규여부,
+        (p.tsal*8*20) as 월급여
+    from users u, parttime p
+    where u.user_seq = p.user_seq )
+;
+
+
+
 
 
 --문제 4
@@ -333,15 +366,19 @@ ORDER BY 회원명
 SELECT
     OG.GOOD_SEQ AS 상품번호,
     G.GOOD_NAME AS 상품명,
-    NVL(OG.ORDER_AMOUNT,0) AS 총판매량,
-    O.TOT_PRICE AS 총판매금액
+    SUM(NVL(OG.ORDER_AMOUNT,0)) AS 총판매량,
+    SUM(O.TOT_PRICE) AS 총판매금액
 FROM 
     GOODS G, 
     ORDERS_GOODS OG, 
     ORDERS O
 WHERE G.GOOD_SEQ = OG.GOOD_SEQ(+)
 AND OG.ORDER_CODE = O.ORDER_CODE(+)
+GROUP BY OG.GOOD_SEQ, G.GOOD_NAME
 ORDER BY  총판매량 DESC;
+
+
+
 
 
 --문제 5
@@ -360,18 +397,44 @@ GROUP BY U.USER_SEQ, U.USER_ID
 ORDER BY 회원번호;
 
 
+
+
+
 --6. 휴먼회원 통계
 --구매실적이 전혀 없는 회원 목록 출력
 SELECT
     U.USER_ID AS 회원아이디,
     U.USER_NAME AS 회원이름,
     COUNT(O.USER_SEQ) AS 구매횟수,
-    DECODE(COUNT(O.USER_SEQ),0,'휴면계정',' ')
+    DECODE(COUNT(O.USER_SEQ),0,'휴면계정',' ') AS 기타
 FROM
     USERS U,
     ORDERS O
 WHERE U.USER_SEQ = O.USER_SEQ(+)
 GROUP BY U.USER_ID, U.USER_NAME;
+
+--정답
+SELECT
+    U.USER_ID, 
+    U.USER_NAME
+FROM USERS U
+WHERE U.USER_SEQ NOT IN (SELECT O.USER_SEQ FROM ORDERS O)
+AND U.USER_GUBUN !='A';
+
+--MINUS 사용한 형태
+SELECT 
+    U.USER_ID, 
+    U.USER_NAME
+FROM USERS U
+WHERE U.USER_SEQ IN
+    (
+    (SELECT USER_SEQ FROM USERS U)
+    MINUS
+    (SELECT USER_SEQ FROM ORDERS O)
+    );
+
+
+
 
 
 --문제 7
@@ -379,28 +442,21 @@ GROUP BY U.USER_ID, U.USER_NAME;
 --조건1 : 관리자 제외
 --조건2: 휴먼회원은 구매 실적이 전혀 없는 회원
 -- 회원수   휴먼회원비율
-SELECT
-    U.USER_ID AS 회원아이디,
-    U.USER_NAME AS 회원이름,
-    COUNT(O.USER_SEQ) AS 구매횟수
-FROM
-    USERS U,
-    ORDERS O
-WHERE U.USER_SEQ = O.USER_SEQ(+)
-GROUP BY U.USER_ID, U.USER_NAME;                ???????????????????????????????????????
+SELECT HCNT || '/' || MCNT AS 회원수, (HCNT/MCNT*100) AS 휴면회원비율
+FROM (
+        SELECT *
+        FROM (
+            SELECT COUNT(1) AS HCNT
+            FROM ( (SELECT USER_SEQ FROM USERS U)
+                    MINUS
+                    (SELECT USER_SEQ FROM ORDERS O)
+                )
+            )H,
+            (SELECT COUNT(1) AS MCNT FROM USERS WHERE USER_GUBUN !='A') M
+     );
 
-SELECT COUNT(구매횟수)
-    FROM
-        (SELECT
-        U.USER_ID AS 회원아이디,
-        U.USER_NAME AS 회원이름,
-        COUNT(O.USER_SEQ) AS 구매횟수
-    FROM
-        USERS U,
-        ORDERS O
-    WHERE U.USER_SEQ = O.USER_SEQ(+)
-    GROUP BY U.USER_ID, U.USER_NAME)
-WHERE 회원아이디 != admin;
+
+
 
 
 --문제 8
@@ -408,13 +464,17 @@ WHERE 회원아이디 != admin;
 --조건1: 관리자 제외
 --조건2: 매니저번호 오름차순 회원번호 오름차순 정렬
 SELECT
-    U2.USER_ID AS 매니저, 
-    U1.USER_ID AS 회원
+    M.USER_ID AS 매니저, 
+    U.USER_ID AS 회원
 FROM 
-    USERS U1,
-    USERS U2
-WHERE U1.MGR_SEQ = U2.USER_SEQ
-AND U2.USER_SEQ NOT IN 4;
+    USERS U,
+    USERS M
+WHERE U.MGR_SEQ = M.USER_SEQ
+AND M.USER_GUBUN != 'A'
+ORDER BY M.USER_SEQ ASC, U.USER_SEQ ASC;
+
+
+
 
 
 --문제 9 
@@ -430,10 +490,25 @@ SELECT
 FROM DUAL;
 
 
+
+
+
 --문제 10
 --월별 판매 실적
 --  1월   2월   3월   4월  
 -- 20000  12000  50000
-SELECT ORDER_DATE
+SELECT 
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '01', TOT_PRICE, 0)) AS 월1,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '02', TOT_PRICE, 0)) AS 월2,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '03', TOT_PRICE, 0)) AS 월3,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '04', TOT_PRICE, 0)) AS 월4,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '05', TOT_PRICE, 0)) AS 월5,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '06', TOT_PRICE, 0)) AS 월6,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '07', TOT_PRICE, 0)) AS 월7,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '08', TOT_PRICE, 0)) AS 월8,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '09', TOT_PRICE, 0)) AS 월9,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '10', TOT_PRICE, 0)) AS 월10,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '11', TOT_PRICE, 0)) AS 월11,
+    SUM(DECODE( TO_CHAR(ORDER_DATE,'MM'), '12', TOT_PRICE, 0)) AS 월12
 FROM ORDERS
-WHERE ORDER_DATE IN BETWEEN 'TO_DATE('1981-01-01','YYYY-MM-DD')' AND 'TO_DATE('1981-01-31','YYYY-MM-DD')';
+WHERE ORDER_DATE BETWEEN TO_DATE('2018-01','YYYY-MM') AND TO_DATE('2018-12','YYYY-MM'); 
