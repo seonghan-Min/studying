@@ -47,6 +47,7 @@ public class Ch02VariableCasting {
 
 
 
+
 ------------------------------
 
 
@@ -130,4 +131,144 @@ public class Ch03Operation {
 
 	}
 
+}
+
+
+
+
+
+------------------------------
+
+
+
+
+
+package com.test;
+
+public class Ch04IfSwitch {
+
+	public static void main(String[] args) {
+		// if 		: case when then (범위비교)
+		// switch 	: decode (떨어지는 값 비교)
+		int score = 92;
+		String res = score>90?"A":"B";
+
+		// if 문
+		// if (조건) 참값; else 거짓값;
+		// else까지 갈 필요 없이 차례대로 내려가다가 만족하는 값을 찾는 순간 바로 if문을 끝낸다.
+		if (score>90) {
+			res = "A";
+			System.out.println("AAAA");
+		}else if (score>80) {
+			res = "B";
+		}else if (score>70) {
+			res = "C";
+		}else
+			res = "F";
+
+		
+		// 예제
+		// 앵간하면 if문을 사용하기 때문에
+		// 그냥 문법이 이렇다 라는 것만 알고 넘어가자.
+		switch(score) {
+			case 90:
+				System.out.println("AA");
+				break;
+			case 80:
+				System.out.println("BB");
+				break;
+			default :
+				System.out.println("CC");
+		}
+
+		
+		// 예제
+		// 점수가 60점이고 남성이면 가산점, 아니면 기타 출력.
+		// 조건에 두 가지를 걸고 싶으면 and, or 를 사용해야한다.
+		// &&(and), ||(or)
+		score = 60;
+		char gen = 'm';
+		if (score>=80 || gen=='m') {
+			System.out.println("가산점");
+		} else {
+			System.out.println("기타");
+		}
+		
+		
+		// 예제
+		// 조건이 참이면 11111 아니면 22222.
+		// boolean 으로 논리변수를 초기화했기 때문에
+		// 조건에 '변수 이름' 만 넣어주면 자동으로 초기화를 찾아 수행한다.
+		boolean isCheck = true;
+		if(isCheck) {
+			System.out.println("11111");
+		} else {
+			System.out.println("22222");
+		}
+		
+		
+		// 예제
+		// 부서번호가 10이면 영업, 아니면 개발 출력.
+		// 조건 안에 '~~와 같다면' 을 사용하고 싶은 경우
+		// = 이 아닌 == 를 사용해야 한다는 점에 주의하자.
+		// = 는 '~~를 집어넣어주세요' 라는 뜻을 가진 초기화 명령이다.
+		int deptno = 10;
+		if(deptno == 10) {
+			System.out.println("영업");
+		} else {
+			System.out.println("개발");
+		}
+		
+		
+		// 예제
+		// 설적이 90 이상이면 A
+		// 성적이 80 이상이면 B
+		// 그 외에는 F
+		if(score>90) {
+			System.out.println("A");
+		} else if(score>80){
+			System.out.println("B");
+		} else {
+			System.out.println("F");
+		}
+		
+		
+		// 예제
+		// 성적이 90 이상이고 남성이면 A+, 여성이면 A0
+		// 성적이 80 이상이고 남성이면 B+, 여성이면 B0
+		// 그 외에는 F
+		if(score>90) {
+			if(gen == 'm') {
+				System.out.println("A+");
+			} else {
+				System.out.println("A0");
+			}
+			
+		} else if(score>80) {
+			if(gen == 'm') {
+				System.out.println("B+");
+			} else {
+				System.out.println("B0");
+			}
+		} else
+			System.out.println("F");
+		
+		
+		// 예제
+		// 입력된 num 값에 따라 홀수 또는 짝수 출력.
+		int num = 11;
+		if (num%2 == 0) {
+			System.out.println("짝수");
+		} else {
+			System.out.println("홀수");
+		}
+
+		
+		
+		
+		
+		
+		
+		
+}
 }
