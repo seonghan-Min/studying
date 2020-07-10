@@ -230,6 +230,7 @@ public class Ch06Array {
 			score = {100,90,40,30,20};*/
 		
 		
+		
 		// 일괄 출력
 		// 시작 0 종류 length
 		for(int i=0 ; i<5 ; i++) {
@@ -282,7 +283,214 @@ public class Ch06Array {
 			System.out.println(ggg1[i] + " x " + ggg2[j] + " = " + ggg1[i]*ggg2[j]);
 			}
 		}
-	
-				
+		System.out.println("--------------------------");
+		
+		
+		// 다차원 배열
+		// 배열에서 나타내는 [] 기호의 의미 = 차수
+		// Data_Type[]	 - 1차원 배열 변수타입
+		// Data_Type[][] - 2차원 배열 변수타입
+		// 이 때 첫 번째 괄호가 [행] 두 번째 괄호가 [렬] 을 의미한다.
+		// 이도 행렬과 같이 0부터 시작한다.
+		// 87의 경우 [3,2] 가 아니라 [2][ 1]
+		int[][] scores = new int[3][4];
+		scores = new int[][]{
+				{100,100,100},
+				{90,98,94},
+				{86,87,88},
+				{76,77,78}};
+		System.out.println(scores[0].length);
+		System.out.println("--------------------------");
+		
+		
+		// 각 학생별 평균과 합, 국영수 과목별 평균과 합을 구하시오
+		int sumObj1=0;
+		int sumObj2=0;
+		int sumObj3=0;
+		for(int i=0 ; i<scores.length ; i++) {
+			for(int j=0 ; j<scores[i].length ; j++) {
+				if(j==0) {
+					sumObj1 += scores[i][j];
+				} else if (j==1) {
+					sumObj2 += scores[i][j];
+				} else if (j==2) {
+					sumObj3 += scores[i][j];
+				}
+			}
+		}
+		System.out.println("첫 번째 과목 합 = " + (sumObj1) + ", 두 번째 과목 평균 = " + (sumObj1)/scores.length);
+		System.out.println("두 번째 과목 합 = " + (sumObj2) + ", 두 번째 과목 평균 = " + (sumObj2)/scores.length);
+		System.out.println("세 번째 과목 합 = " + (sumObj3) + ", 두 번째 과목 평균 = " + (sumObj3)/scores.length);
+		System.out.println("--------------------------");
+		
+		
+		
+		
+		
+		
+		int sum1A=0;
+		int sum2A=0;
+		int sum3A=0;
+		int sum4A=0;
+		for (int i=0 ; i<scores[0].length ; i++) {
+			sum1A = scores[0][i];
+			sum2A = scores[1][i];
+			sum3A = scores[2][i];
+			sum4A = scores[3][i];
+		}
+		System.out.println("학생 1의 총점은 = " + (sum1A) + ", 평점은 = " + (sum1A/scores[0].length));
+		System.out.println("학생 2의 총점은 = " + (sum2A) + ", 평점은 = " + (sum2A/scores[0].length));
+		System.out.println("학생 3의 총점은 = " + (sum3A) + ", 평점은 = " + (sum3A/scores[0].length));
+		System.out.println("학생 4의 총점은 = " + (sum4A) + ", 평점은 = " + (sum4A/scores[0].length));
+		System.out.println("--------------------------");
+		
+		
+		
+		int[][] scoress = new int[][] 	{{100, 100, 100}, 
+									{90, 98, 94}, 
+									{86, 87, 88},             
+									{76, 77, 79}}; 
+		int sum=0;
+		System.out.println("-----------학생별 평균-----------");
+
+
+		for (int x=0; x<scoress.length; x++) {
+			for (int y=0; y<scoress[0].length; y++) {
+				sum += scoress[x][y];
+				}
+			System.out.printf("%d번째 학생 점수 총합 : %d, 평균 : %d\n", x+1, sum, sum/scores[0].length);
+			sum = 0;
+			}
+           
+			System.out.println("-----------과목별 평균-----------");
+
+			for (int x=0; x<scoress[0].length; x++) {
+				for (int y=0; y<scoress.length; y++) {
+					sum += scoress[y][x];
+					}
+				System.out.printf("%d번째 과목 점수 총합 : %d, 평균 : %d\n", x+1, sum, sum/scores.length);
+				sum = 0;
+				} 
+		
+			
+		System.out.println("--------------------------");
+		
+		
+		// 가변배열
+		// 배열이 정사각형으로 나오는 것이 아닌, 각 배열마다 배열의 개수가 다른 배열.
+		// 현업에선 업는 공간에 0을 채워놓지, 굳이 가변화시키진 않는다.
+		// 자주 쓰는 형태가 아니지만 알고 있으면 좋긴 하다.
+		
+		
+		
+		
+
+
+		
 }			
+}			
+
+
+------------------------------------------------------------------------------------
+
+
+
+
+package com.test;
+
+public class Ch06ArrayLotto {
+
+	public static void main(String[] args) {
+		
+		// 숫자 랜덤으로 뽑기
+		double res = Math.random();
+		System.out.println("0부터 10 사이의 임의의 수 = "+ (res*10));
+		System.out.println("1부터 45 사이의 임의의 수 = " + (res*45));
+		
+		
+		System.out.println();
+		System.out.println("-----------------------------");
+		System.out.println();
+		
+		
+		// 숫자 6개 랜덤으로 뽑기
+		for (int i=0 ; i<6 ; i++) {
+			res = (Math.random()*45)+1;
+			System.out.print("[" + ((int)res) + "]");
+		}
+		
+		
+		System.out.println();
+		System.out.println("-----------------------------");
+		System.out.println();
+		
+		
+		// Lotto 번호 뽑기
+		// 중복 제외
+		int[] lotto = new int[6];
+		for (int i=0 ; i<lotto.length ; i++) {
+			lotto[i] = (int)(Math.random()*45)+1;
+			for (int j=0 ; j<i ; j++) {
+				if (lotto[i] == lotto[j]) {
+					i--;
+		}
+		}
+		}
+		System.out.println("이번 주 로또 번호");
+		for (int i=0 ; i<lotto.length ; i++) {
+			System.out.print("[" + lotto[i] + "]");
+		}
+		
+		
+		System.out.println();
+		System.out.println("-----------------------------");
+		System.out.println();
+		
+		
+		// 활용
+		// 다음 arr의 값만큼 * 출력
+		int[] arr= {1,4,4,3,1,6};
+		for(int i=0 ; i<arr.length ; i++) {
+			for (int j=0 ; j<arr[i] ; j++) {
+				System.out.print("*");
+				
+			}System.out.println();
+		}
+		
+		
+		System.out.println();
+		System.out.println("-----------------------------");
+		System.out.println();
+		
+		
+		// 예제
+		// 40~100 사이의 임의의 숫자 6개 받아서 합/평균 출력
+		// math.random 사용
+		double grade = Math.random();
+		int[] gradeArray = new int[6];
+		int sum = 0;
+		for (int i=0 ; i<gradeArray.length ; i++) {
+			gradeArray[i] = (int)(Math.random()*60)+40;
+			System.out.print("[" + gradeArray[i] + "점" +"]");
+			sum += gradeArray[i];
+		}
+		System.out.println();
+		System.out.println("각 점수의 합은 = " + (sum));
+		System.out.println("각 점수의 평균은 = " + (sum/gradeArray.length));
+		
+		
+		System.out.println();
+		System.out.println("-----------------------------");
+		System.out.println();
+		
+		
+		
+		
+	
+
+	}
+
 }
+
+
+
