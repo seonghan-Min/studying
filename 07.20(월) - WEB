@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+body {
+   font-size: 19pt;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="./mystyle.css">
+<script>
+   //개발자 영역
+</script>
+</head>
+<body bgcolor="Seashell" topmargin="100" leftmargin="100">
+
+   <form method="post" action="/hello">
+      <input type="text" name="uid"><br> 
+      <input type="password" name="upw"><br>
+
+      <textarea rows="3" cols="10" name="contents">여기 내용</textarea><br> 
+      <select name="job">
+         <option value="">직업선택</option>
+         <option value="s">학생</option>
+         <option value="ss">회사원</option>
+         <option value="etc">기타</option>
+      </select><br> 
+      <input type="checkbox" name="lang" value="html">HTML
+      <input type="checkbox" name="lang" value="css">CSS 
+      <input type="checkbox" name="lang" value="webd">웹디자인<br> 
+      <input type="radio" name="habit" value="book">독서 
+      <input type="radio" name="habit" value="mnt">등산 
+      <input type="radio" name="habit" value="fish">낚시<br> 
+      <input type="file" name="ufile">
+
+      <input type="hidden" name="secure" value="111"> <input
+         type="reset" value="초기화"> <input type="image" width="100"
+         height="100"
+         src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.crowdpic.net%2Fphoto%2F%25ED%2595%2598%25EB%258A%2598-%25EA%25B5%25AC%25EB%25A6%2584-%25EB%25B9%2584%25ED%2596%2589%25EA%25B8%25B0-%25ED%2595%2598%25EB%258A%2598%25EC%2586%258D-%25ED%2592%258D%25EA%25B2%25BD-171269&psig=AOvVaw3_HdL79Rs_f5n15hU4zMir&ust=1595317860347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCOjAyaSs2-oCFQAAAAAdAAAAABAI">
+      <input type="submit" value="전송">
+   </form>
+   이건 내용...
+   <!-- 여기에 주석 내용이 옵니다. -->
+   <table class="type07">
+      <thead>
+         <tr>
+            <th scope="cols">타이틀</th>
+            <th scope="cols">내용</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr>
+            <th scope="row">항목명</th>
+            <td>내용이 들어갑니다.</td>
+         </tr>
+         <tr>
+            <th scope="row">항목명</th>
+            <td>내용이 들어갑니다.</td>
+         </tr>
+         <tr>
+            <th scope="row">항목명</th>
+            <td>내용이 들어갑니다.</td>
+         </tr>
+      </tbody>
+   </table>
+
+</body>
+</html>
