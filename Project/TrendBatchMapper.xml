@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.kpc.trend.mapper.TrendBatchMapper">
+	
+	
+	<resultMap id="TrendMapping" type="com.kpc.trend.TrendVO">
+		<id property="CLNT_ID" column="CLNT_ID" />
+		<result property="SESS_ID" column="SESS_ID"/>
+		<result property="HITS_SEQ" column="HITS_SEQ"/>
+		<result property="PD_C" column="PD_C"/>
+		<result property="PD_ADD_NM" column="PD_ADD_NM"/>
+		<result property="PD_BRA_NM" column="PD_BRA_NM"/>
+		<result property="PD_BUY_AM" column="PD_BUY_AM"/>
+		<result property="PD_BUY_CT" column="PD_BUY_CT"/>
+		<result property="PD_BUY_CT2" column="PD_BUY_CT2"/>
+		<result property="CLNT_GENDER" column="CLNT_GENDER"/>
+		<result property="CLNT_AGE" column="CLNT_AGE"/>
+		<result property="SESS_SEQ" column="SESS_SEQ"/>
+		<result property="SESS_DT" column="SESS_DT"/>
+		<result property="TOT_PAG_VIEW_CT" column="TOT_PAG_VIEW_CT"/>
+		<result property="TOT_SESS_HR_V" column="TOT_SESS_HR_V"/>
+		<result property="DVC_CTG_NM" column="DVC_CTG_NM"/>
+		<result property="ZON_NM" column="ZON_NM"/>
+		<result property="CITY_NM" column="CITY_NM"/>
+		<result property="PD_NM" column="PD_NM"/>
+		<result property="CLAC1_NM" column="CLAC1_NM"/>
+		<result property="CLAC2_NM" column="CLAC2_NM"/>
+		<result property="CLAC3_NM" column="CLAC3_NM"/>
+		
+		<result property="PD_BUY_MAM" column="PD_BUY_MAM"/>
+		<result property="TOT_PD_BUY_CT" column="TOT_PD_BUY_CT"/>
+		<result property="TOT_PD_BUY_AM" column="TOT_PD_BUY_AM"/>
+		<result property="TOT_SALES" column="TOT_SALES"/>
+		<result property="SEARCH_CNT" column="SEARCH_CNT"/>
+		<result property="KWD_NM" column="KWD_NM"/>
+		
+		<result property="babycare" column="babycare" />
+		<result property="others" column="others" />
+		<result property="manclothes" column="manclothes" />
+		<result property="sportware" column="sportware" />
+		<result property="sundries" column="sundries" />
+		<result property="food" column="food" />
+		<result property="electronics" column="electronics" />
+		<result property="sports" column="sports" />
+		<result property="housewares" column="housewares" />
+		<result property="underware" column="underware" />
+		<result property="necessaries" column="necessaries" />
+		<result property="womenclothes" column="womenclothes" />
+		
+		<result property="Ulsan" column="Ulsan" />
+        <result property="Gangwondo" column="Gangwondo" />
+        <result property="Daejeon" column="Daejeon" />
+        <result property="Gyeongsangnamdo" column="Gyeongsangnamdo" />
+        <result property="Jeollabukdo" column="Jeollabukdo" />
+        <result property="Chungcheongnamdo" column="Chungcheongnamdo" />
+        <result property="Jeollanamdo" column="Jeollanamdo" />
+        <result property="Jejudo" column="Jejudo" />
+        <result property="Daegu" column="Daegu" />
+        <result property="Busan" column="Busan" />
+        <result property="Gyeongsangbukdo" column="Gyeongsangbukdo" />
+        <result property="Seoul" column="Seoul" />
+        <result property="Chungcheongbukdo" column="Chungcheongbukdo" />
+        <result property="Gyeonggido" column="Gyeonggido" />
+        <result property="Incheon" column="Incheon" />
+        <result property="Gwangju" column="Gwangju" />
+      
+        <result property="teen" column="teen" />
+        <result property="twenties" column="twenties" />
+        <result property="thirties" column="thirties" />
+        <result property="forties" column="forties" />
+        <result property="fifties" column="fifties" />
+        <result property="sixties" column="sixties" />
+        <result property="seventies" column="seventies" />
+        <result property="eighties" column="eighties" />
+	</resultMap>
+
+
+	<delete id="batch1">
+		drop table batch01
+	</delete>
+	
+	<delete id="batch2">
+		drop table batch02
+	</delete>
+	
+	<delete id="batch3">
+		drop table batch03
+	</delete>
+	
+	<delete id="batch4">
+		drop table batch04
+	</delete>
+	
+	<delete id="batch5">
+		drop table batch05
+	</delete>
+	
+	<delete id="batch6">
+		drop table batch06
+	</delete>
+	
+	<delete id="batch7">
+		drop table batch07
+	</delete>
+	
+	<delete id="batch8">
+		drop table batch08
+	</delete>
+	
+	<delete id="batch9">
+		drop table batch09
+	</delete>
+	
+	<delete id="batch10">	
+		drop table batch10
+	</delete>
+	
+	<delete id="batch11">
+		drop table batch11
+	</delete>
+	
+	<delete id="batch12">
+		drop table batch12
+	</delete>
+	
+	<delete id="batch13">
+		drop table batch13
+	</delete>
+	
+	<delete id="batch14">
+		drop table batch14
+	</delete>
+	
+	
+	<!-- // 1. 전체 판매 금액 (월 & 금액) -->
+	<select id="totSalesBatchMapper" resultType="com.kpc.trend.TrendVO">
+	create table batch01 as 
+			SELECT SESS_DT, round(sum(pay)/100000000) as PD_BUY_AM
+			FROM (SELECT 
+			        to_char(to_date(SESS_DT),'MM') as SESS_DT, 
+			        sum(PD_BUY_AM*PD_BUY_CT) as pay
+			        FROM PCSM
+			        group by SESS_DT)        
+			group by SESS_DT
+			order by SESS_DT
+	</select>
+	
+	
+	
+	
+	<!-- // 2. 전체 판매 건수 (월 & 건수) -->
+	<select id="totSalesCountBatchMapper" resultType="com.kpc.trend.TrendVO">
+		create table batch02 as 
+			SELECT SESS_DT, sum(sumCNT) as PD_BUY_CT
+			FROM (SELECT
+			        to_char(to_date(SESS_DT),'MM') as SESS_DT,
+			        sum(PD_BUY_CT) as sumCNT
+			        FROM PCSM
+			        group by SESS_DT)
+			group by SESS_DT
+			order by SESS_DT
+	</select>
+	
+	
+	
+	
+	<!-- // 3. 대분류 전체 판매금액 (대분류 & 분류별 금액) -->
+	<select id="categoryTotSalesBatchMapper" resultType="com.kpc.trend.TrendVO">
+	create table batch03 as 
+		SELECT
+		CLAC1_NM , round(sum(PD_BUY_AM*PD_BUY_CT)/100000000) as PD_BUY_AM
+		FROM PCSM
+		group by CLAC1_NM
+	</select>
+	
+	
+	
+	
+	<!-- // 4. 대분류 전체 판매건수 (대분류 & 분류별 건수) -->
+	<select id="categoryTotSalesCountBatchMapper" resultType="com.kpc.trend.TrendVO">
+	create table batch04 as 
+        SELECT
+		CLAC1_NM  , sum(PD_BUY_CT) as PD_BUY_CT
+		FROM PCSM
+		group by CLAC1_NM
+	</select>
+	
+	
+	
+	<!-- // 5. 상품별 판매랭킹 TOP10(판매건수)  -->
+	<select id="trendSelectBatchMapper" resultType="com.kpc.trend.TrendVO">
+	create table batch05 as 
+		select * from
+		(select
+		PD_NM,
+		PD_C,
+		PD_BRA_NM,
+		CLAC2_NM,
+		(max(PD_BUY_AM)) as PD_BUY_MAM,
+		(sum(PD_BUY_CT)) as TOT_PD_BUY_CT,
+		(sum(PD_BUY_AM*PD_BUY_CT)) as TOT_SALES
+		from PCSM
+		where PD_C IN (select PD_C from pcsm group by PD_C )
+		group by PD_NM, PD_C, PD_BRA_NM, CLAC2_NM
+		order by TOT_PD_BUY_CT desc)
+		<![CDATA[where rownum <= 5]]>
+	</select>
+	
+	
+	
+	
+	<!-- // 6. 검색어 top6  -->
+	<select id="searchSelectBatchMapper" resultType="com.kpc.trend.TrendVO">
+	create table batch06 as 
+		select * from
+		(select kwd_nm, sum(search_cnt) as search_cnt
+		from search
+		group by kwd_nm
+		order by search_cnt desc)
+		<![CDATA[where rownum <= 8]]>
+	</select>
+
+
+	
+	
+	<!-- // 7. 성별 월 판매금액 (월 & 판매금액 %% 성별) -->
+	<select id="genderTotSalesBatchMapper" resultType="com.kpc.trend.TrendVO">
+	create table batch07 as 
+		select SESS_DT, round(Female/100000000) as PD_BUY_CT, round(Male/100000000) as PD_BUY_CT2 from
+		    (
+		    select * from
+		        (
+		        select 
+		        to_char(to_date(sess_dt),'MM') as sess_dt, clnt_gender, pd_buy_am
+		        from pcsm
+		        )
+		    pivot (sum(pd_buy_am) for clnt_gender in('F' as Female,'M' as male))
+		    order by sess_dt
+		    )
+		order by sess_dt
+	</select>		
+	
+	
+	
+	
+	<!--//8. 성별 구매 건수 -->
+	<select id="genderTotSalesCountBatchMapper" resultType="com.kpc.trend.TrendVO">
+		create table batch08 as 
+			SELECT
+			CLNT_GENDER,
+			sum(PD_BUY_CT) as PD_BUY_CT
+			from PCSM
+			group by CLNT_GENDER
+			order by CLNT_GENDER
+	</select>
+
+
+
+
+	<!--//9. 성별 대분류 판매 건수 -->
+	<select id="gendercategoryTotSalesCountBatchMapper" resultType="com.kpc.trend.TrendVO">
+		create table batch09 as 
+			select *
+			FROM (select
+			CLAC1_NM,
+			CLNT_GENDER,
+			PD_BUY_CT
+			FROM PCSM)
+			PIVOT (SUM(PD_BUY_CT)
+			FOR
+			CLAC1_NM IN ('babycare' as babycare,
+			'manclothes' as manclothes,
+			'others'as others,
+			'sportware' as sportware,
+			'sundries' as sundries,
+			'food' as food,
+			'electronics' as electronics,
+			'sports' as sports,
+			'housewares' as housewares,
+			'underware' as underware,
+			'necessaries' as necessaries,
+			'womenclothes' as womenclothes))
+	</select>
+	
+	
+	
+	
+    <!-- // 10. 상세보기1 -->
+	<select id="detailViewBatchMapper" resultType="com.kpc.trend.TrendVO">
+      create table batch10 as 
+         SELECT
+	         PD_NM,
+	         PD_C,
+	         PD_BRA_NM,
+	         CLAC1_NM,
+	         CLAC2_NM,
+	         CLAC3_NM,
+	         SUM(TOT_PAG_VIEW_CT) as TOT_PAG_VIEW_CT,
+	         SUM(TOT_SESS_HR_V) as TOT_SESS_HR_V,
+	         sum(PD_BUY_CT) as PD_BUY_CT,
+	         max(pd_buy_am) as pd_buy_am,
+	         SUM(PD_BUY_AM*PD_BUY_CT) as tot_PD_BUY_AM
+         FROM PCSM
+         WHERE pd_C='687790' or pd_C='817486' or pd_C='748308'
+         GROUP BY PD_NM,PD_C,PD_BRA_NM,CLAC1_NM, CLAC2_NM ,CLAC3_NM
+	</select>    
+   	
+   	
+   	
+   	
+   	
+   	<!-- // 11. 상세보기2(성별 판매 건수) -->
+	<select id="detailViewgenderBatchMapper" resultType="com.kpc.trend.TrendVO">
+        create table batch11 as 
+        SELECT
+         pd_c,
+         CLNT_GENDER,
+         sum(PD_BUY_CT) as PD_BUY_CT
+         from PCSM
+         where pd_C = 687790 or pd_C=817486 or pd_C=748308
+            group by CLNT_GENDER, pd_C
+            order by CLNT_GENDER
+	</select> 
+   	
+   	
+   	   	
+   	   	
+	<!-- // 12. 상세보기3(연령대별 구매 건수) -->
+	<select id="detailViewAgeBatchMapper" resultType="com.kpc.trend.TrendVO">
+      create table batch12 as
+      select *
+       from (select clnt_age,PD_BUY_CT, pd_c
+             FROM PCSM WHERE pd_C = 687790 or pd_C=817486 or pd_C=748308 )
+             PIVOT (SUM(PD_BUY_CT)
+             FOR 
+            clnt_age IN (
+           '10' AS teen,
+           '20' AS twenties,
+           '30' AS thirties,
+           '40' AS forties,
+           '50' AS fifties,
+           '60' AS sixties,
+           '70' AS seventies,
+           '80' AS eighties))
+	</select>  
+	
+	
+	
+	
+	<!-- // 13. 상세보기4(구매지역) -->
+	<select id="detailViewRegionBatchMapper" resultType="com.kpc.trend.TrendVO">
+       create table batch13 as
+			select 
+			    pd_C, 
+			    ZON_NM, 
+			    sum(pd_BUY_CT) as pd_BUY_CT
+			from pcsm
+			WHERE pd_C = 687790 or pd_C=817486 or pd_C=748308
+			group by pd_C, ZON_NM
+			order by pd_C
+	</select>
+	
+	
+	
+	
+	<!-- // 14. 상품목록(상품코드 정렬) -->
+	<select id="GoodsListBatchMapper" resultType="com.kpc.trend.TrendVO">
+       create table batch14 as
+			select * from
+				(select
+					PD_NM,
+					PD_C,
+					PD_BRA_NM,
+					CLAC2_NM,
+					(max(PD_BUY_AM)) as PD_BUY_MAM,
+					(sum(PD_BUY_CT)) as TOT_PD_BUY_CT,
+					(sum(PD_BUY_AM*PD_BUY_CT)) as TOT_SALES
+				from PCSM
+				where PD_C IN (select PD_C from pcsm group by PD_C )
+				group by PD_NM, PD_C, PD_BRA_NM, CLAC2_NM
+				order by pd_C)
+			<![CDATA[where rownum <= 300]]>
+	</select>
+
+        	
+	
+</mapper>

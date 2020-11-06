@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.kpc.trend.mapper.TrendMapper">
+	
+	
+	<resultMap id="TrendMapping" type="com.kpc.trend.TrendVO">
+		<id property="CLNT_ID" column="CLNT_ID" />
+		<result property="SESS_ID" column="SESS_ID"/>
+		<result property="HITS_SEQ" column="HITS_SEQ"/>
+		<result property="PD_C" column="PD_C"/>
+		<result property="PD_ADD_NM" column="PD_ADD_NM"/>
+		<result property="PD_BRA_NM" column="PD_BRA_NM"/>
+		<result property="PD_BUY_AM" column="PD_BUY_AM"/>
+		<result property="PD_BUY_CT" column="PD_BUY_CT"/>
+		<result property="PD_BUY_CT2" column="PD_BUY_CT2"/>
+		<result property="CLNT_GENDER" column="CLNT_GENDER"/>
+		<result property="CLNT_AGE" column="CLNT_AGE"/>
+		<result property="SESS_SEQ" column="SESS_SEQ"/>
+		<result property="SESS_DT" column="SESS_DT"/>
+		<result property="TOT_PAG_VIEW_CT" column="TOT_PAG_VIEW_CT"/>
+		<result property="TOT_SESS_HR_V" column="TOT_SESS_HR_V"/>
+		<result property="DVC_CTG_NM" column="DVC_CTG_NM"/>
+		<result property="ZON_NM" column="ZON_NM"/>
+		<result property="CITY_NM" column="CITY_NM"/>
+		<result property="PD_NM" column="PD_NM"/>
+		<result property="CLAC1_NM" column="CLAC1_NM"/>
+		<result property="CLAC2_NM" column="CLAC2_NM"/>
+		<result property="CLAC3_NM" column="CLAC3_NM"/>
+		
+		<result property="PD_BUY_MAM" column="PD_BUY_MAM"/>
+		<result property="TOT_PD_BUY_CT" column="TOT_PD_BUY_CT"/>
+		<result property="TOT_PD_BUY_AM" column="TOT_PD_BUY_AM"/>
+		<result property="TOT_SALES" column="TOT_SALES"/>
+		<result property="SEARCH_CNT" column="SEARCH_CNT"/>
+		<result property="KWD_NM" column="KWD_NM"/>
+		
+		<result property="babycare" column="babycare" />
+		<result property="others" column="others" />
+		<result property="manclothes" column="manclothes" />
+		<result property="sportware" column="sportware" />
+		<result property="sundries" column="sundries" />
+		<result property="food" column="food" />
+		<result property="electronics" column="electronics" />
+		<result property="sports" column="sports" />
+		<result property="housewares" column="housewares" />
+		<result property="underware" column="underware" />
+		<result property="necessaries" column="necessaries" />
+		<result property="womenclothes" column="womenclothes" />
+		
+		<result property="Ulsan" column="Ulsan" />
+        <result property="Gangwondo" column="Gangwondo" />
+        <result property="Daejeon" column="Daejeon" />
+        <result property="Gyeongsangnamdo" column="Gyeongsangnamdo" />
+        <result property="Jeollabukdo" column="Jeollabukdo" />
+        <result property="Chungcheongnamdo" column="Chungcheongnamdo" />
+        <result property="Jeollanamdo" column="Jeollanamdo" />
+        <result property="Jejudo" column="Jejudo" />
+        <result property="Daegu" column="Daegu" />
+        <result property="Busan" column="Busan" />
+        <result property="Gyeongsangbukdo" column="Gyeongsangbukdo" />
+        <result property="Seoul" column="Seoul" />
+        <result property="Chungcheongbukdo" column="Chungcheongbukdo" />
+        <result property="Gyeonggido" column="Gyeonggido" />
+        <result property="Incheon" column="Incheon" />
+        <result property="Gwangju" column="Gwangju" />
+      
+        <result property="teen" column="teen" />
+        <result property="twenties" column="twenties" />
+        <result property="thirties" column="thirties" />
+        <result property="forties" column="forties" />
+        <result property="fifties" column="fifties" />
+        <result property="sixties" column="sixties" />
+        <result property="seventies" column="seventies" />
+        <result property="eighties" column="eighties" />
+	</resultMap>
+	
+	
+	
+	
+	
+	<!-- // 1. 전체 판매 금액 (월 & 금액) -->
+	<select id="totSalesMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch01
+	</select>
+	
+	
+	
+	
+	<!-- // 2. 전체 판매 건수 (월 & 건수) -->
+	<select id="totSalesCountMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch02
+	</select>
+	
+	
+	
+	
+	<!-- // 3. 대분류 전체 판매금액 (대분류 & 분류별 금액) -->
+	<select id="categoryTotSalesMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch03
+	</select>
+	
+	
+	
+	
+	<!-- // 4. 대분류 전체 판매건수 (대분류 & 분류별 건수) -->
+	<select id="categoryTotSalesCountMapper" resultType="com.kpc.trend.TrendVO">
+       select * from batch04
+	</select>
+	
+	
+	
+	<!-- // 5. 상품별 판매랭킹 TOP10(판매건수)  -->
+	<select id="trendSelectMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch05
+	</select>
+	
+	
+	
+	
+	<!-- // 6. 검색어 top6  -->
+	<select id="searchSelectMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch06
+	</select>
+
+
+	
+	
+	<!-- // 7. 성별 월 판매금액 (월 & 판매금액 %% 성별) -->
+	<select id="genderTotSales" resultType="com.kpc.trend.TrendVO">
+		select * from batch07
+	</select>		
+	
+	
+	
+	
+	<!-- // 8. 성별 구매 건수 -->
+	<select id="genderTotSalesCountMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch08
+	</select>
+
+
+
+
+	<!-- // 9. 성별 대분류 판매 건수 -->
+	<select id="gendercategoryTotSalesCountMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch09
+	</select>
+	
+	
+	
+	
+	
+	<!-- // 10. 상세보기1 -->
+	<select id="detailViewMapper" resultType="com.kpc.trend.TrendVO" parameterType="map">
+		select * from batch10
+		where pd_C = #{pd_C}
+	</select>    
+   	
+   	
+   	
+   	<!-- // 11. 상세보기2(성별 판매 건수) -->
+	<select id="detailViewgenderMapper" resultType="com.kpc.trend.TrendVO" parameterType="map">
+		select * from batch11
+		where pd_C = #{pd_C}
+	</select>  
+   	
+   	   
+   	   
+	<!-- // 12. 상세보기3(연령대별 구매 건수) -->
+	<select id="detailViewAgeMapper" resultType="com.kpc.trend.TrendVO" parameterType="map">
+		select * from batch12
+		where pd_C = #{pd_C}
+	</select>  
+	
+	
+	
+	<!-- // 13. 상세보기4(구매지역)-->
+	<select id="detailViewRegionMapper" resultType="com.kpc.trend.TrendVO" parameterType="map">
+		select * from batch13
+		where pd_C = #{pd_C}
+	</select>  
+	
+	
+	
+	<!-- // 14. 상품목록(상품코드 정렬)-->
+	<select id="GoodsListMapper" resultType="com.kpc.trend.TrendVO">
+		select * from batch14
+	</select>
+
+        	
+	
+</mapper>
